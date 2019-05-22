@@ -13,7 +13,7 @@
 `maven:`
 ```
 <dependency>
-    <groupId>org.apache.rocketmq</groupId>
+    <groupId>com.ihomefnt.rocketmq</groupId>
     <artifactId>rocketmq-client</artifactId>
     <version>4.3.0</version>
 </dependency>
