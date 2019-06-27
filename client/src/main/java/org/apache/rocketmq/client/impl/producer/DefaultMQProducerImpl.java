@@ -652,32 +652,32 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
     private TopicPublishInfo getFilteredTopicPublishInfoCopy(TopicPublishInfo topicPublishInfo, Message msg) throws InterruptedException, MQBrokerException, RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException {
         List<MessageQueue> matchTag = new ArrayList<MessageQueue>();
-        List<MessageQueue> subAll = new ArrayList<MessageQueue>();
+        List<MessageQueue> subAll = topicPublishInfo.getMessageQueueList().subList(0, topicPublishInfo.getMessageQueueList().size() / 2);
         String msgTag = msg.getUserProperty("x-semporna-router-label");
-        for (BrokerData bd : topicPublishInfo.getTopicRouteData().getBrokerDatas()) {
-            String addr = bd.selectBrokerAddr();
-            if (addr != null) {
-                GroupList groupList = this.mQClientFactory.getMQClientAPIImpl().queryTopicConsumeByWho(addr, msg.getTopic(), 2000);
-                for (String group : groupList.getGroupList()) {
-                    Map<MessageQueue, String> messageQueueClientMap = getClientConnection(addr, group);
-                    if (null != messageQueueClientMap && messageQueueClientMap.size() > 0) {
-                        for (MessageQueue mq : topicPublishInfo.getMessageQueueList()) {
-                            String clientId = messageQueueClientMap.get(mq);
-                            String[] units = clientId.split("@");
-                            String tag = "";
-                            if (units.length > 2) {
-                                tag = units[units.length - 1];
-                            }
-                            if (!StringUtils.isEmpty(msgTag) && msgTag.equals(tag)) {
-                                matchTag.add(mq);
-                            } else if (StringUtils.isEmpty(tag)) {
-                                subAll.add(mq);
+        if (!StringUtils.isEmpty(msgTag)) {
+            for (BrokerData bd : topicPublishInfo.getTopicRouteData().getBrokerDatas()) {
+                String addr = bd.selectBrokerAddr();
+                if (addr != null) {
+                    GroupList groupList = this.mQClientFactory.getMQClientAPIImpl().queryTopicConsumeByWho(addr, msg.getTopic(), 2000);
+                    for (String group : groupList.getGroupList()) {
+                        Map<MessageQueue, String> messageQueueClientMap = getClientConnection(addr, group);
+                        if (null != messageQueueClientMap && messageQueueClientMap.size() > 0) {
+                            for (MessageQueue mq : topicPublishInfo.getMessageQueueList()) {
+                                String clientId = messageQueueClientMap.get(mq);
+                                if (StringUtils.isEmpty(clientId) || !clientId.contains("#")) {
+                                    continue;
+                                }
+                                String[] units = clientId.split("#");
+                                String tag = units[1];
+                                if (!StringUtils.isEmpty(msgTag) && msgTag.equals(tag)) {
+                                    matchTag.add(mq);
+                                }
                             }
                         }
                     }
                 }
+                break;
             }
-            break;
         }
         TopicPublishInfo copy = new TopicPublishInfo();
         copy.setMessageQueueList(subAll);
@@ -687,6 +687,9 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         copy.setTopicRouteData(topicPublishInfo.getTopicRouteData());
         if (matchTag.size() > 0) {
             copy.setMessageQueueList(matchTag);
+        }
+        if (copy.getMessageQueueList().size() <= 0) {
+            throw new IllegalStateException("当前主题不存在可用的消费队列，请注意检查消息标签和消费者标签");
         }
         return copy;
     }
