@@ -29,7 +29,7 @@
     <inceptionYear>2012</inceptionYear>
     <groupId>com.ihomefnt.rocketmq</groupId>
     <artifactId>rocketmq-all</artifactId>
-    <version>4.5.0</version>
+    <version>4.5.2</version>
     <packaging>pom</packaging>
     <name>Apache RocketMQ ${project.version}</name>
     <url>http://rocketmq.apache.org/</url>
@@ -55,7 +55,7 @@
         <url>git@github.com:apache/rocketmq.git</url>
         <connection>scm:git:git@github.com:apache/rocketmq.git</connection>
         <developerConnection>scm:git:git@github.com:apache/rocketmq.git</developerConnection>
-        <tag>rocketmq-all-4.5.0</tag>
+        <tag>rocketmq-all-4.5.2</tag>
     </scm>
 
     <mailingLists>
@@ -468,7 +468,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.6.3</version>
+            <version>2.23.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
