@@ -719,11 +719,11 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         try {
             ConsumerConnection consumerConnection = this.mQClientFactory.getMQClientAPIImpl().getConsumerConnectionList(addr, group, 2000);
             for (Connection connection : consumerConnection.getConnectionSet()) {
-                String clinetId = connection.getClientId();
-                ConsumerRunningInfo consumerRunningInfo = this.mQClientFactory.getMQClientAPIImpl().getConsumerRunningInfo(addr, group, clinetId, false, 2000);
+                String clientId = connection.getClientId();
+                ConsumerRunningInfo consumerRunningInfo = this.mQClientFactory.getMQClientAPIImpl().getConsumerRunningInfo(addr, group, clientId, false, 2000);
                 for (MessageQueue messageQueue : consumerRunningInfo.getMqTable().keySet()) {
-//                    results.put(messageQueue, clinetId + " " + connection.getClientAddr());
-                    results.put(messageQueue, clinetId);
+//                    results.put(messageQueue, clientId + " " + connection.getClientAddr());
+                    results.put(messageQueue, clientId);
                 }
             }
         } catch (Exception err) {

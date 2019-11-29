@@ -131,7 +131,16 @@ public class SendMessageProcessor extends AbstractSendMessageProcessor implement
         }
 
         String newTopic = MixAll.getRetryTopic(requestHeader.getGroup());
-        int queueIdInt = Math.abs(this.random.nextInt() % 99999999) % subscriptionGroupConfig.getRetryQueueNums();
+        /**
+         * @author onefish
+         * 开始处理重试队列的标签信息
+         * 当是带标签的重试消息时，将消息转发到带标签的重试队列中
+         */
+        int queueIdInt = requestHeader.getRetryQueueId();
+        /**
+         * @author onefish
+         * 结束处理重试队列的标签信息
+         */
 
         int topicSysFlag = 0;
         if (requestHeader.isUnitMode()) {
@@ -160,19 +169,6 @@ public class SendMessageProcessor extends AbstractSendMessageProcessor implement
             response.setRemark("look message by offset failed, " + requestHeader.getOffset());
             return response;
         }
-        /**
-         * @author onefish
-         * 开始处理重试队列的标签信息
-         * 当是带标签的重试消息时，将消息转发到带标签的重试队列中
-         */
-        final String msgLabel = msgExt.getProperty("x-semporna-router-label");
-        if (!StringUtils.isEmpty(msgLabel)) {
-            newTopic = newTopic + "%TAG%" + msgLabel;
-        }
-        /**
-         * @author onefish
-         * 结束处理重试队列的标签信息
-         */
 
         final String retryTopic = msgExt.getProperty(MessageConst.PROPERTY_RETRY_TOPIC);
         if (null == retryTopic) {

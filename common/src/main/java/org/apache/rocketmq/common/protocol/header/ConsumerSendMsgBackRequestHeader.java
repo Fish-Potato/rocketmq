@@ -33,6 +33,7 @@ public class ConsumerSendMsgBackRequestHeader implements CommandCustomHeader {
     private String originTopic;
     @CFNullable
     private boolean unitMode = false;
+    private int retryQueueId = 0;
     private Integer maxReconsumeTimes;
 
     @Override
@@ -100,5 +101,13 @@ public class ConsumerSendMsgBackRequestHeader implements CommandCustomHeader {
     public String toString() {
         return "ConsumerSendMsgBackRequestHeader [group=" + group + ", originTopic=" + originTopic + ", originMsgId=" + originMsgId
             + ", delayLevel=" + delayLevel + ", unitMode=" + unitMode + ", maxReconsumeTimes=" + maxReconsumeTimes + "]";
+    }
+
+    public int getRetryQueueId() {
+        return retryQueueId;
+    }
+
+    public void setRetryQueueId(int retryQueueId) {
+        this.retryQueueId = retryQueueId;
     }
 }

@@ -1110,6 +1110,7 @@ public class MQClientAPIImpl {
         requestHeader.setDelayLevel(delayLevel);
         requestHeader.setOriginMsgId(msg.getMsgId());
         requestHeader.setMaxReconsumeTimes(maxConsumeRetryTimes);
+        requestHeader.setRetryQueueId(Integer.parseInt(msg.getProperty("RETRY_QUEUE_ID")));
 
         RemotingCommand response = this.remotingClient.invokeSync(MixAll.brokerVIPChannel(this.clientConfig.isVipChannelEnabled(), addr),
             request, timeoutMillis);
